@@ -22,4 +22,13 @@ class PointService @Autowired constructor(
 
         return userPointTable.insertOrUpdate(userId, userPoint.currentPoint)
     }
+
+    fun useUserPoint(
+        userId: Long, amount: Long
+    ): UserPoint {
+        val userPoint = userPointTable.selectById(userId)
+        userPoint.usePoint(amount)
+
+        return userPointTable.insertOrUpdate(userId, userPoint.currentPoint)
+    }
 }

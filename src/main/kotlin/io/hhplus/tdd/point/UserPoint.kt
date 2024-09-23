@@ -30,4 +30,9 @@ class UserPoint(
     fun chargePoint(point: Long) {
         this.point += point
     }
+
+    fun usePoint(point: Long) {
+        if(this.point < point) throw RuntimeException("잔여 포인트가 부족합니다")
+        this.point -= point
+    }
 }
