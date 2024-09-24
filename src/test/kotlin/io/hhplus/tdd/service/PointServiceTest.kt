@@ -113,4 +113,60 @@ class PointServiceTest {
         assertThat(histories.get(1)).isEqualTo(PointHistory(2, userId, TransactionType.USE, 20, 0))
     }
 
+    @Test
+    @DisplayName("유저 포인트를 조회한다")
+    fun getUserPoint() {
+        //given
+        val userId: Long = 10L;
+        val initPoint = userPointTable.insertOrUpdate(userId, 10L)
+
+        //when
+        val userPoint = pointService.getUserPoint(userId)
+
+        //then
+        assertThat(userPoint).isEqualTo(initPoint)
+    }
+
+    @Test
+    @DisplayName("유저 포인트를 조회한다. 없다면 기본값은 0 이다")
+    fun getUserPointWithoutInitData() {
+        //given
+        val userId: Long = 10L;
+
+        //when
+        val userPoint = pointService.getUserPoint(userId)
+
+        //then
+        assertThat(userPoint).isEqualTo(UserPoint(userId, 0L, 0L))
+    }
+
+    @Test
+    @DisplayName("유저 포인트를 충전하면 충전된 포인트가 조회된다")
+    fun getUserPointWithCharge() {
+        //given
+        val userId: Long = 10L;
+        val initPoint = userPointTable.insertOrUpdate(userId, 10L)
+        val chargedPoint = pointService.chargeUserPoint(userId, 100L)
+
+        //when
+        val userPoint = pointService.getUserPoint(userId)
+
+        //then
+        assertThat(userPoint).isEqualTo(UserPoint(userId, 110L, 0L))
+    }
+
+    @Test
+    @DisplayName("유저 포인트를 사용하면 사용된 포인트가 조회된다")
+    fun getUserPointWithUse() {
+        //given
+        val userId: Long = 10L;
+        val initPoint = userPointTable.insertOrUpdate(userId, 100L)
+        val usedPoint = pointService.useUserPoint(userId, 30L)
+
+        //when
+        val userPoint = pointService.getUserPoint(userId)
+
+        //then
+        assertThat(userPoint).isEqualTo(UserPoint(userId, 70L, 0L))
+    }
 }

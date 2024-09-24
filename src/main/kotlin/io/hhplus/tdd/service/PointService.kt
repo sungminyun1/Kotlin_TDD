@@ -46,4 +46,10 @@ class PointService @Autowired constructor(
     ): List<PointHistory> {
         return pointHistoryTable.selectAllByUserId(userId)
     }
+
+    fun getUserPoint(
+        userId: Long
+    ): UserPoint {
+        return userPointTable.selectById(userId)
+    }
 }
