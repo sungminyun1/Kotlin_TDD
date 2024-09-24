@@ -20,7 +20,7 @@ class UserPointTest {
         userPoint.chargePoint(30)
 
         //then
-        assertThat(userPoint.currentPoint).isEqualTo(40)
+        assertThat(userPoint.point).isEqualTo(40)
     }
 
     @Test
@@ -34,7 +34,7 @@ class UserPointTest {
         userPoint.usePoint(5)
 
         //then
-        assertThat(userPoint.currentPoint).isEqualTo(5)
+        assertThat(userPoint.point).isEqualTo(5)
     }
 
     @Test

@@ -3,6 +3,7 @@ package io.hhplus.tdd.service
 import io.hhplus.tdd.database.PointHistoryTable
 import io.hhplus.tdd.database.UserPointTable
 import io.hhplus.tdd.point.PointHistory
+import io.hhplus.tdd.point.TransactionType
 import io.hhplus.tdd.point.UserPoint
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -20,7 +21,11 @@ class PointService @Autowired constructor(
         val userPoint = userPointTable.selectById(userId)
         userPoint.chargePoint(amount)
 
-        return userPointTable.insertOrUpdate(userId, userPoint.currentPoint)
+        val chargedPoint = userPointTable.insertOrUpdate(userId, userPoint.point)
+
+        pointHistoryTable.insert(userId, amount, TransactionType.CHARGE, chargedPoint.updateMillis)
+
+        return chargedPoint
     }
 
     fun useUserPoint(
@@ -29,6 +34,16 @@ class PointService @Autowired constructor(
         val userPoint = userPointTable.selectById(userId)
         userPoint.usePoint(amount)
 
-        return userPointTable.insertOrUpdate(userId, userPoint.currentPoint)
+        val usedPoint = userPointTable.insertOrUpdate(userId, userPoint.point)
+
+        pointHistoryTable.insert(userId, amount, TransactionType.USE, usedPoint.updateMillis)
+
+        return usedPoint
+    }
+
+    fun getUserPointHistory(
+        userId: Long
+    ): List<PointHistory> {
+        return pointHistoryTable.selectAllByUserId(userId)
     }
 }

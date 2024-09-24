@@ -2,19 +2,15 @@ package io.hhplus.tdd.service
 
 import io.hhplus.tdd.database.PointHistoryTable
 import io.hhplus.tdd.database.UserPointTable
+import io.hhplus.tdd.point.PointHistory
+import io.hhplus.tdd.point.TransactionType
 import io.hhplus.tdd.point.UserPoint
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootTest
 class PointServiceTest {
@@ -84,4 +80,37 @@ class PointServiceTest {
             .hasMessage("잔여 포인트가 부족합니다")
 
     }
+
+    @Test
+    @DisplayName("유저 포인트 충전시 HistoryTable 에 저장된다")
+    fun historyTableUseTest() {
+        //given
+        val userId: Long = 10L;
+        pointService.chargeUserPoint(userId, 10L)
+        pointService.chargeUserPoint(userId, 20L)
+
+        //when
+        val histories = pointService.getUserPointHistory(userId)
+
+        assertThat(histories).hasSize(2)
+        assertThat(histories.get(0)).isEqualTo(PointHistory(1, userId, TransactionType.CHARGE, 10, 0))
+        assertThat(histories.get(1)).isEqualTo(PointHistory(2, userId, TransactionType.CHARGE, 20, 0))
+    }
+
+    @Test
+    @DisplayName("유저 포인트 사용시 HistoryTable 에 저장된다")
+    fun historyTableChargeTest() {
+        //given
+        val userId: Long = 10L;
+        pointService.chargeUserPoint(userId, 100L)
+        pointService.useUserPoint(userId, 20L)
+
+        //when
+        val histories = pointService.getUserPointHistory(userId)
+
+        assertThat(histories).hasSize(2)
+        assertThat(histories.get(0)).isEqualTo(PointHistory(1, userId, TransactionType.CHARGE, 100, 0))
+        assertThat(histories.get(1)).isEqualTo(PointHistory(2, userId, TransactionType.USE, 20, 0))
+    }
+
 }

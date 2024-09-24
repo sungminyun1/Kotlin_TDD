@@ -1,13 +1,10 @@
 package io.hhplus.tdd.point
 
-class UserPoint(
-    private val id: Long,
-    private var point: Long,
-    private val updateMillis: Long,
+data class UserPoint(
+    val id: Long,
+    var point: Long,
+    val updateMillis: Long,
 ) {
-
-    val currentPoint: Long
-        get() = point
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
