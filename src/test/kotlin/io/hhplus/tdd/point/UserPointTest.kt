@@ -24,6 +24,19 @@ class UserPointTest {
     }
 
     @Test
+    @DisplayName("포인트는 최대 100만을 초과할 수 없다")
+    fun testChargePointWithMaximumPoint() {
+        //given
+        val userId = 10L
+        val userPoint = UserPoint(userId, 999_999, 0)
+
+        //when then
+        assertThatThrownBy { userPoint.chargePoint(30) }
+            .isInstanceOf(RuntimeException::class.java)
+    }
+
+
+    @Test
     @DisplayName("포인트를 사용한다")
     fun testUsePoint() {
         //given

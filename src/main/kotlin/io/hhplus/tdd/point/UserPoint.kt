@@ -1,10 +1,19 @@
 package io.hhplus.tdd.point
 
-data class UserPoint(
+class UserPoint(
     val id: Long,
-    var point: Long,
+    point: Long,
     val updateMillis: Long,
 ) {
+
+    private val MAXIMUM_POINT = 1_000_000L
+
+    var point: Long = point
+        set(value) {
+            if( value < 0 )  throw RuntimeException("잔여 포인트가 부족합니다")
+            if( value > MAXIMUM_POINT) throw RuntimeException("포인트는 100만포인트를 초과하여 보유할 수 없습니다")
+            field = value
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,7 +38,6 @@ data class UserPoint(
     }
 
     fun usePoint(point: Long) {
-        if(this.point < point) throw RuntimeException("잔여 포인트가 부족합니다")
         this.point -= point
     }
 }
