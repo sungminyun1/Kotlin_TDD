@@ -5,6 +5,8 @@ import io.hhplus.tdd.database.UserPointTable
 import io.hhplus.tdd.point.PointHistory
 import io.hhplus.tdd.point.TransactionType
 import io.hhplus.tdd.point.UserPoint
+import io.hhplus.tdd.point.dto.response.PointHistoryResponse
+import io.hhplus.tdd.point.dto.response.UserPointResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -16,7 +18,7 @@ class PointService @Autowired constructor(
 
     fun chargeUserPoint(
         userId: Long, amount: Long
-    ) : UserPoint {
+    ) : UserPointResponse {
 
         val userPoint = userPointTable.selectById(userId)
         userPoint.chargePoint(amount)
@@ -25,12 +27,12 @@ class PointService @Autowired constructor(
 
         pointHistoryTable.insert(userId, amount, TransactionType.CHARGE, chargedPoint.updateMillis)
 
-        return chargedPoint
+        return UserPointResponse.of(chargedPoint)
     }
 
     fun useUserPoint(
         userId: Long, amount: Long
-    ): UserPoint {
+    ): UserPointResponse {
         val userPoint = userPointTable.selectById(userId)
         userPoint.usePoint(amount)
 
@@ -38,18 +40,19 @@ class PointService @Autowired constructor(
 
         pointHistoryTable.insert(userId, amount, TransactionType.USE, usedPoint.updateMillis)
 
-        return usedPoint
+        return UserPointResponse.of(usedPoint)
     }
 
     fun getUserPointHistory(
         userId: Long
-    ): List<PointHistory> {
+    ): List<PointHistoryResponse> {
         return pointHistoryTable.selectAllByUserId(userId)
+            .map { PointHistoryResponse.of(it) }
     }
 
     fun getUserPoint(
         userId: Long
-    ): UserPoint {
-        return userPointTable.selectById(userId)
+    ): UserPointResponse {
+        return UserPointResponse.of(userPointTable.selectById(userId))
     }
 }

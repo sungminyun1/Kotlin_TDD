@@ -1,5 +1,7 @@
 package io.hhplus.tdd.point
 
+import io.hhplus.tdd.point.dto.response.PointHistoryResponse
+import io.hhplus.tdd.point.dto.response.UserPointResponse
 import io.hhplus.tdd.service.PointService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,7 +21,7 @@ class PointController @Autowired constructor(
     @GetMapping("{id}")
     fun point(
         @PathVariable id: Long,
-    ): UserPoint {
+    ): UserPointResponse {
         return pointService.getUserPoint(id)
     }
 
@@ -29,7 +31,7 @@ class PointController @Autowired constructor(
     @GetMapping("{id}/histories")
     fun history(
         @PathVariable id: Long,
-    ): List<PointHistory> {
+    ): List<PointHistoryResponse> {
         return pointService.getUserPointHistory(id)
     }
 
@@ -40,7 +42,7 @@ class PointController @Autowired constructor(
     fun charge(
         @PathVariable id: Long,
         @RequestBody amount: Long,
-    ): UserPoint {
+    ): UserPointResponse {
         return pointService.chargeUserPoint(id, amount)
     }
 
@@ -51,7 +53,7 @@ class PointController @Autowired constructor(
     fun use(
         @PathVariable id: Long,
         @RequestBody amount: Long,
-    ): UserPoint {
+    ): UserPointResponse {
         return pointService.useUserPoint(id, amount)
     }
 }

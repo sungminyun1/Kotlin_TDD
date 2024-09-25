@@ -37,7 +37,7 @@ class PointServiceTest {
         val chargedPoint = pointService.chargeUserPoint(userId, 100L);
 
         //then
-        assertThat(chargedPoint).isEqualTo(UserPoint(userId, 110L, 0L))
+        assertThat(chargedPoint.point).isEqualTo(110L)
     }
 
     @Test
@@ -50,7 +50,7 @@ class PointServiceTest {
         val chargedPoint = pointService.chargeUserPoint(userId, 100L);
 
         //then
-        assertThat(chargedPoint).isEqualTo(UserPoint(userId, 100L, 0L))
+        assertThat(chargedPoint.point).isEqualTo(100L)
     }
 
     @Test
@@ -64,7 +64,7 @@ class PointServiceTest {
         val usedPoint = pointService.useUserPoint(userId, 5L)
 
         //then
-        assertThat(usedPoint).isEqualTo(UserPoint(userId, 5L, 0L))
+        assertThat(usedPoint.point).isEqualTo(5L)
     }
 
     @Test
@@ -93,8 +93,14 @@ class PointServiceTest {
         val histories = pointService.getUserPointHistory(userId)
 
         assertThat(histories).hasSize(2)
-        assertThat(histories.get(0)).isEqualTo(PointHistory(1, userId, TransactionType.CHARGE, 10, 0))
-        assertThat(histories.get(1)).isEqualTo(PointHistory(2, userId, TransactionType.CHARGE, 20, 0))
+        assertThat(histories.get(0).id).isEqualTo(1)
+        assertThat(histories.get(0).amount).isEqualTo(10)
+        assertThat(histories.get(0).type).isEqualTo(TransactionType.CHARGE)
+        assertThat(histories.get(0).userId).isEqualTo(userId)
+        assertThat(histories.get(1).id).isEqualTo(2)
+        assertThat(histories.get(1).amount).isEqualTo(20)
+        assertThat(histories.get(1).type).isEqualTo(TransactionType.CHARGE)
+        assertThat(histories.get(1).userId).isEqualTo(userId)
     }
 
     @Test
@@ -109,8 +115,14 @@ class PointServiceTest {
         val histories = pointService.getUserPointHistory(userId)
 
         assertThat(histories).hasSize(2)
-        assertThat(histories.get(0)).isEqualTo(PointHistory(1, userId, TransactionType.CHARGE, 100, 0))
-        assertThat(histories.get(1)).isEqualTo(PointHistory(2, userId, TransactionType.USE, 20, 0))
+        assertThat(histories.get(0).id).isEqualTo(1)
+        assertThat(histories.get(0).amount).isEqualTo(100)
+        assertThat(histories.get(0).type).isEqualTo(TransactionType.CHARGE)
+        assertThat(histories.get(0).userId).isEqualTo(userId)
+        assertThat(histories.get(1).id).isEqualTo(2)
+        assertThat(histories.get(1).amount).isEqualTo(20)
+        assertThat(histories.get(1).type).isEqualTo(TransactionType.USE)
+        assertThat(histories.get(1).userId).isEqualTo(userId)
     }
 
     @Test
@@ -124,7 +136,8 @@ class PointServiceTest {
         val userPoint = pointService.getUserPoint(userId)
 
         //then
-        assertThat(userPoint).isEqualTo(initPoint)
+        assertThat(userPoint.point).isEqualTo(10)
+        assertThat(userPoint.id).isEqualTo(userId)
     }
 
     @Test
@@ -137,7 +150,8 @@ class PointServiceTest {
         val userPoint = pointService.getUserPoint(userId)
 
         //then
-        assertThat(userPoint).isEqualTo(UserPoint(userId, 0L, 0L))
+        assertThat(userPoint.point).isEqualTo(0)
+        assertThat(userPoint.id).isEqualTo(userId)
     }
 
     @Test
@@ -152,7 +166,7 @@ class PointServiceTest {
         val userPoint = pointService.getUserPoint(userId)
 
         //then
-        assertThat(userPoint).isEqualTo(UserPoint(userId, 110L, 0L))
+        assertThat(userPoint.point).isEqualTo(110)
     }
 
     @Test
@@ -167,6 +181,6 @@ class PointServiceTest {
         val userPoint = pointService.getUserPoint(userId)
 
         //then
-        assertThat(userPoint).isEqualTo(UserPoint(userId, 70L, 0L))
+        assertThat(userPoint.point).isEqualTo(70)
     }
 }
