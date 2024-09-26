@@ -11,12 +11,14 @@ class UserPointTable {
     private val table = HashMap<Long, UserPoint>()
 
     fun selectById(id: Long): UserPoint {
-        Thread.sleep(Math.random().toLong() * 200L)
+//        Thread.sleep(Math.random().toLong() * 200L)
+        Thread.sleep((Math.random() * 200L).toLong())
         return table[id] ?: UserPoint(id = id, point = 0, updateMillis = System.currentTimeMillis())
     }
 
     fun insertOrUpdate(id: Long, amount: Long): UserPoint {
-        Thread.sleep(Math.random().toLong() * 300L)
+//        Thread.sleep(Math.random().toLong() * 300L)
+        Thread.sleep((Math.random() * 300L).toLong())
         val userPoint = UserPoint(id = id, point = amount, updateMillis = System.currentTimeMillis())
         table[id] = userPoint
         return userPoint

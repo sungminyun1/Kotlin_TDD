@@ -18,7 +18,8 @@ class PointHistoryTable {
         transactionType: TransactionType,
         updateMillis: Long,
     ): PointHistory {
-        Thread.sleep(Math.random().toLong() * 300L)
+//        Thread.sleep(Math.random().toLong() * 300L)
+        Thread.sleep((Math.random() * 300L).toLong())
         val history = PointHistory(
             id = cursor++,
             userId = id,
