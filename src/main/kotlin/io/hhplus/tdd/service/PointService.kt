@@ -2,6 +2,7 @@ package io.hhplus.tdd.service
 
 import io.hhplus.tdd.database.PointHistoryTable
 import io.hhplus.tdd.database.UserPointTable
+import io.hhplus.tdd.database.dto.PointHistorySaveDto
 import io.hhplus.tdd.point.PointHistory
 import io.hhplus.tdd.point.TransactionType
 import io.hhplus.tdd.point.UserPoint
@@ -15,8 +16,8 @@ import java.util.concurrent.locks.ReentrantLock
 
 @Service
 class PointService @Autowired constructor(
-    private val pointHistoryTable: PointHistoryTable,
-    private val userPointTable: UserPointTable
+    private val pointHistoryRepository: PointHistoryRepository,
+    private val userPointRepository: UserPointRepository,
 ){
     private val log = LoggerFactory.getLogger(PointService::class.java)
 
@@ -30,12 +31,17 @@ class PointService @Autowired constructor(
 
         try{
             log.debug("start charge " + System.nanoTime())
-            val userPoint = userPointTable.selectById(userId)
+            val userPoint = userPointRepository.findByUserId(userId)
             userPoint.chargePoint(amount)
 
-            val chargedPoint = userPointTable.insertOrUpdate(userId, userPoint.point)
+            val chargedPoint = userPointRepository.save(userPoint)
 
-            pointHistoryTable.insert(userId, amount, TransactionType.CHARGE, chargedPoint.updateMillis)
+            pointHistoryRepository.save(PointHistorySaveDto(
+                userId = userId,
+                amount = amount,
+                type = TransactionType.CHARGE,
+                timeMillis = chargedPoint.updateMillis
+            ))
 
             log.debug("end charge " + System.nanoTime())
 
@@ -56,14 +62,18 @@ class PointService @Autowired constructor(
 
         try{
             log.debug("start use" + System.currentTimeMillis())
-            val userPoint = userPointTable.selectById(userId)
+            val userPoint = userPointRepository.findByUserId(userId)
 
             userPoint.usePoint(amount)
 
-            val usedPoint = userPointTable.insertOrUpdate(userId, userPoint.point)
+            val usedPoint = userPointRepository.save(userPoint)
 
-
-            pointHistoryTable.insert(userId, amount, TransactionType.USE, usedPoint.updateMillis)
+            pointHistoryRepository.save(PointHistorySaveDto(
+                userId = userId,
+                amount = amount,
+                type = TransactionType.USE,
+                timeMillis = usedPoint.updateMillis
+            ))
 
             log.debug("end use" + System.currentTimeMillis())
 
@@ -82,7 +92,7 @@ class PointService @Autowired constructor(
         lockForUser(userId)
         try{
             log.debug("start history " + System.currentTimeMillis())
-            val histories = pointHistoryTable.selectAllByUserId(userId)
+            val histories = pointHistoryRepository.selectAllByUser(userId)
             log.debug("end history " + System.currentTimeMillis())
 
             return histories.map { PointHistoryResponse.of(it) }
@@ -99,7 +109,7 @@ class PointService @Autowired constructor(
         lockForUser(userId)
         try{
             log.debug("start get " + System.currentTimeMillis())
-            val userPoint = userPointTable.selectById(userId)
+            val userPoint = userPointRepository.findByUserId(userId)
             log.debug("end get " + System.currentTimeMillis())
 
             return UserPointResponse.of(userPoint)
